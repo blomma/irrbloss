@@ -1,7 +1,5 @@
 namespace Irrbloss;
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System;
 using System.Net.Sockets;
@@ -26,18 +24,15 @@ public class RedisConnection : IDisposable
     private readonly TimeSpan RestartConnectionTimeout = TimeSpan.FromSeconds(15);
 
     private readonly SemaphoreSlim _reconnectSemaphore = new(initialCount: 1, maxCount: 1);
-    private readonly string _connectionString;
+    private string? _connectionString;
     private ConnectionMultiplexer? _connection;
-    private readonly ILogger<RedisConnection> _logger;
 
-    public RedisConnection(IConfiguration configuration, ILogger<RedisConnection> logger)
-    {
-        _connectionString = configuration.GetConnectionString("Redis");
-        _logger = logger;
-    }
+    public RedisConnection() { }
 
-    public void Initalize()
+    public void Initalize(string connectionString)
     {
+        _connectionString = connectionString;
+
         _connection = ConnectionMultiplexer.Connect(_connectionString);
         _lastReconnectTicks = DateTimeOffset.UtcNow.UtcTicks;
     }
@@ -154,7 +149,7 @@ public class RedisConnection : IDisposable
 
             Interlocked.Exchange(ref _connection, null);
             ConnectionMultiplexer newConnection = await ConnectionMultiplexer.ConnectAsync(
-                _connectionString
+                _connectionString!
             );
             Interlocked.Exchange(ref _connection, newConnection);
             Interlocked.Exchange(ref _lastReconnectTicks, utcNow.UtcTicks);

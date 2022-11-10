@@ -23,11 +23,11 @@ public class DependencyContextAssemblyCatalog
         IrrblossAssemblyName = name;
     }
 
-    public DependencyContextAssemblyCatalog() : this(Assembly.GetEntryAssembly()) { }
+    public DependencyContextAssemblyCatalog() : this(Assembly.GetEntryAssembly()!) { }
 
-    public DependencyContextAssemblyCatalog(Assembly? entryAssembly)
+    public DependencyContextAssemblyCatalog(Assembly entryAssembly)
     {
-        _dependencyContext = DependencyContext.Load(entryAssembly);
+        _dependencyContext = DependencyContext.Load(entryAssembly)!;
     }
 
     public virtual IReadOnlyCollection<Assembly> GetAssemblies()
