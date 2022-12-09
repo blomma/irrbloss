@@ -48,7 +48,12 @@ public class RedisDistributedLockManager
         var value = CreateUniqueLockId();
 
         var result = await _redisConnection.BasicRetryAsync(
-            (db) => db.StringSetAsync(key, value, ttl, When.NotExists)
+            static (db, state) =>
+            {
+                var (key, value, ttl, o) = state;
+                return db.StringSetAsync(key, value, ttl, o);
+            },
+            (key, value, ttl, When.NotExists)
         );
 
         if (!result)
@@ -72,7 +77,12 @@ public class RedisDistributedLockManager
         RedisValue[] values = { _redisDistributedLock.Value };
 
         return _redisConnection.BasicRetryAsync(
-            (db) => db.ScriptEvaluateAsync(UnlockScript, key, values)
+            static (db, state) =>
+            {
+                var (unlockScript, key, values) = state;
+                return db.ScriptEvaluateAsync(unlockScript, key, values);
+            },
+            (UnlockScript, key, values)
         );
     }
 }

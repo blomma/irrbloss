@@ -37,7 +37,7 @@ public class RedisConnection : IDisposable
         _lastReconnectTicks = DateTimeOffset.UtcNow.UtcTicks;
     }
 
-    public async Task<T> BasicRetryAsync<T>(Func<IDatabase, Task<T>> func)
+    public async Task<T> BasicRetryAsync<T, TArg>(Func<IDatabase, TArg, Task<T>> func, TArg funcArgument)
     {
         while (true)
         {
@@ -46,7 +46,7 @@ public class RedisConnection : IDisposable
                 var connection = _connection;
                 if (connection != null)
                 {
-                    return await func(connection.GetDatabase());
+                    return await func(connection.GetDatabase(), funcArgument);
                 }
             }
             catch (Exception ex)
