@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Irrbloss.Exceptions;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +12,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Net.Http.Headers;
 
 public class ManagedResponseExceptionMiddleware
@@ -56,7 +53,7 @@ public class ManagedResponseExceptionMiddleware
 
         try
         {
-            await _next(context);
+            await _next(context).ConfigureAwait(false);
         }
         catch (Exception exception)
         {
@@ -86,7 +83,8 @@ public class ManagedResponseExceptionMiddleware
             var managedException =
                 error as ManagedresponseException ?? new ManagedresponseException(error);
 
-            await WriteProblemDetails(context, managedException.ProblemDetails);
+            await WriteProblemDetails(context, managedException.ProblemDetails)
+                .ConfigureAwait(false);
         }
     }
 
@@ -102,9 +100,9 @@ public class ManagedResponseExceptionMiddleware
             ContentTypes = ContentTypes,
         };
 
-        await Executor.ExecuteAsync(actionContext, result);
+        await Executor.ExecuteAsync(actionContext, result).ConfigureAwait(false);
 
-        await context.Response.CompleteAsync();
+        await context.Response.CompleteAsync().ConfigureAwait(false);
     }
 
     private static void ClearResponse(HttpContext context, int statusCode)
@@ -127,19 +125,5 @@ public class ManagedResponseExceptionMiddleware
         {
             context.Response.Headers.Add(header);
         }
-    }
-}
-
-public static class ManagedResponseExceptionMiddlewareExtensions
-{
-    public static IServiceCollection AddManagedResponseException(this IServiceCollection services)
-    {
-        services.TryAddSingleton<IActionResultExecutor<ObjectResult>, ObjectResultExecutor>();
-        return services;
-    }
-
-    public static IApplicationBuilder UseManagedResponseException(this IApplicationBuilder app)
-    {
-        return app.UseMiddleware<ManagedResponseExceptionMiddleware>();
     }
 }

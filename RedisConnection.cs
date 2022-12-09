@@ -37,7 +37,10 @@ public class RedisConnection : IDisposable
         _lastReconnectTicks = DateTimeOffset.UtcNow.UtcTicks;
     }
 
-    public async Task<T> BasicRetryAsync<T, TArg>(Func<IDatabase, TArg, Task<T>> func, TArg funcArgument)
+    public async Task<T> BasicRetryAsync<T, TArg>(
+        Func<IDatabase, TArg, Task<T>> func,
+        TArg funcArgument
+    )
     {
         while (true)
         {
@@ -46,7 +49,7 @@ public class RedisConnection : IDisposable
                 var connection = _connection;
                 if (connection != null)
                 {
-                    return await func(connection.GetDatabase(), funcArgument);
+                    return await func(connection.GetDatabase(), funcArgument).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -58,7 +61,7 @@ public class RedisConnection : IDisposable
             {
                 try
                 {
-                    await ForceReconnectAsync();
+                    await ForceReconnectAsync().ConfigureAwait(false);
                 }
                 catch (ObjectDisposedException) { }
             }
@@ -90,7 +93,9 @@ public class RedisConnection : IDisposable
 
         try
         {
-            if (!await _reconnectSemaphore.WaitAsync(RestartConnectionTimeout))
+            if (
+                !await _reconnectSemaphore.WaitAsync(RestartConnectionTimeout).ConfigureAwait(false)
+            )
                 return;
         }
         catch
@@ -139,7 +144,7 @@ public class RedisConnection : IDisposable
             {
                 try
                 {
-                    await _connection.CloseAsync();
+                    await _connection.CloseAsync().ConfigureAwait(false);
                 }
                 catch
                 {
@@ -148,9 +153,9 @@ public class RedisConnection : IDisposable
             }
 
             Interlocked.Exchange(ref _connection, null);
-            ConnectionMultiplexer newConnection = await ConnectionMultiplexer.ConnectAsync(
-                _connectionString!
-            );
+            ConnectionMultiplexer newConnection = await ConnectionMultiplexer
+                .ConnectAsync(_connectionString!)
+                .ConfigureAwait(false);
             Interlocked.Exchange(ref _connection, newConnection);
             Interlocked.Exchange(ref _lastReconnectTicks, utcNow.UtcTicks);
         }
