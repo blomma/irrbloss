@@ -24,16 +24,15 @@ public class RedisConnection : IDisposable
     private readonly TimeSpan RestartConnectionTimeout = TimeSpan.FromSeconds(15);
 
     private readonly SemaphoreSlim _reconnectSemaphore = new(initialCount: 1, maxCount: 1);
-    private string? _connectionString;
+    private readonly string? _connectionString;
+
     private ConnectionMultiplexer? _connection;
 
-    public RedisConnection() { }
-
-    public void Initalize(string connectionString)
+    public RedisConnection(string connectionString)
     {
         _connectionString = connectionString;
-
         _connection = ConnectionMultiplexer.Connect(_connectionString);
+
         _lastReconnectTicks = DateTimeOffset.UtcNow.UtcTicks;
     }
 

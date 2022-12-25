@@ -6,11 +6,15 @@ using System.Linq;
 using System.Reflection;
 using Irrbloss.Interfaces;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 public static class IrrblossExtensions
 {
-    public static IServiceCollection AddServiceModules(this IServiceCollection services)
+    public static IServiceCollection AddServiceModules(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         var assemblyCatalog = new DependencyContextAssemblyCatalog();
         var assemblies = assemblyCatalog.GetAssemblies();
@@ -24,7 +28,7 @@ public static class IrrblossExtensions
                 throw new Exception();
             }
 
-            t.AddServices(services);
+            t.AddServices(services, configuration);
         }
 
         return services;
