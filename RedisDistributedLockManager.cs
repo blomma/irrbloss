@@ -23,11 +23,11 @@ public class RedisDistributedLockManager
     }
 
     private RedisDistributedLock? _redisDistributedLock;
-    private readonly RedisConnection _redisConnection;
+    private readonly IConnectionMultiplexer _connectionMultiplexer;
 
-    public RedisDistributedLockManager(RedisConnection redisConnection)
+    public RedisDistributedLockManager(IConnectionMultiplexer connectionMultiplexer)
     {
-        _redisConnection = redisConnection;
+        _connectionMultiplexer = connectionMultiplexer;
     }
 
     private const string UnlockScript =
@@ -47,17 +47,8 @@ public class RedisDistributedLockManager
     {
         var value = CreateUniqueLockId();
 
-        var result = await _redisConnection
-            .BasicRetryAsync(
-                static (db, state) =>
-                {
-                    var (key, value, ttl, o) = state;
-                    return db.StringSetAsync(key, value, ttl, o);
-                },
-                (key, value, ttl, When.NotExists)
-            )
-            .ConfigureAwait(false);
-
+        var db = _connectionMultiplexer.GetDatabase();
+        var result = await db.StringSetAsync(key, value, ttl, When.NotExists);
         if (!result)
         {
             return false;
@@ -78,13 +69,7 @@ public class RedisDistributedLockManager
         RedisKey[] key = { _redisDistributedLock.Key };
         RedisValue[] values = { _redisDistributedLock.Value };
 
-        return _redisConnection.BasicRetryAsync(
-            static (db, state) =>
-            {
-                var (unlockScript, key, values) = state;
-                return db.ScriptEvaluateAsync(unlockScript, key, values);
-            },
-            (UnlockScript, key, values)
-        );
+        var db = _connectionMultiplexer.GetDatabase();
+        return db.ScriptEvaluateAsync(UnlockScript, key, values);
     }
 }
