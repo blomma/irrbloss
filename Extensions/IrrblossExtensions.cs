@@ -59,26 +59,6 @@ public static class IrrblossExtensions
         return builder;
     }
 
-    public static IEndpointRouteBuilder UseStartupModules(this IEndpointRouteBuilder builder)
-    {
-        var assemblyCatalog = new DependencyContextAssemblyCatalog();
-        var assemblies = assemblyCatalog.GetAssemblies();
-
-        var serviceModules = GetModules<IStartupModule>(assemblies);
-
-        foreach (var serviceModule in serviceModules)
-        {
-            if (Activator.CreateInstance(serviceModule) is not IStartupModule t)
-            {
-                throw new Exception();
-            }
-
-            t.AddStartups(builder);
-        }
-
-        return builder;
-    }
-
     private static IEnumerable<Type> GetModules<T>(IReadOnlyCollection<Assembly> assemblies)
     {
         return assemblies.SelectMany(
