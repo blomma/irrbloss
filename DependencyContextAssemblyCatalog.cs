@@ -23,7 +23,8 @@ public class DependencyContextAssemblyCatalog
         IrrblossAssemblyName = name;
     }
 
-    public DependencyContextAssemblyCatalog() : this(Assembly.GetEntryAssembly()!) { }
+    public DependencyContextAssemblyCatalog()
+        : this(Assembly.GetEntryAssembly()!) { }
 
     public DependencyContextAssemblyCatalog(Assembly entryAssembly)
     {
