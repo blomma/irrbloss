@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 [Serializable]
-public class ManagedresponseException : Exception
+public class ManagedResponseException : Exception
 {
     public ProblemDetails ProblemDetails { get; set; } = new();
 
-    public ManagedresponseException(Exception exception)
+    public ManagedResponseException(Exception exception)
     {
         var problemDetails = new ProblemDetails
         {
@@ -23,7 +23,7 @@ public class ManagedresponseException : Exception
         ProblemDetails = problemDetails;
     }
 
-    public ManagedresponseException(HttpStatusCode statusCode, string message)
+    public ManagedResponseException(HttpStatusCode statusCode, string message)
     {
         var problemDetails = new ProblemDetails
         {
@@ -35,6 +35,6 @@ public class ManagedresponseException : Exception
         ProblemDetails = problemDetails;
     }
 
-    protected ManagedresponseException(SerializationInfo info, StreamingContext context)
+    protected ManagedResponseException(SerializationInfo info, StreamingContext context)
         : base(info, context) { }
 }
