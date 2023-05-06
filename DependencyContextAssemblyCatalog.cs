@@ -15,11 +15,7 @@ public class DependencyContextAssemblyCatalog
 
     static DependencyContextAssemblyCatalog()
     {
-        var name = typeof(IrrblossExtensions).Assembly.GetName().Name;
-        if (name == null)
-        {
-            throw new Exception();
-        }
+        var name = typeof(IrrblossExtensions).Assembly.GetName().Name ?? throw new Exception();
         IrrblossAssemblyName = name;
     }
 
