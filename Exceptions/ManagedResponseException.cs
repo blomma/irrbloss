@@ -2,7 +2,6 @@ namespace Irrbloss.Exceptions;
 
 using System;
 using System.Net;
-using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +33,4 @@ public class ManagedResponseException : Exception
 
         ProblemDetails = problemDetails;
     }
-
-    protected ManagedResponseException(SerializationInfo info, StreamingContext context)
-        : base(info, context) { }
 }
