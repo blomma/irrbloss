@@ -16,7 +16,6 @@ public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultip
     }
 
     private RedisDistributedLock? _redisDistributedLock;
-    private readonly IConnectionMultiplexer _connectionMultiplexer = connectionMultiplexer;
     private const string UnlockScript =
         @"
             if redis.call(""get"",KEYS[1]) == ARGV[1] then
@@ -34,7 +33,7 @@ public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultip
     {
         var value = CreateUniqueLockId();
 
-        var db = _connectionMultiplexer.GetDatabase();
+        var db = connectionMultiplexer.GetDatabase();
         var result = await db.StringSetAsync(key, value, ttl, When.NotExists);
         if (!result)
         {
@@ -56,7 +55,7 @@ public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultip
         RedisKey[] key =  [ _redisDistributedLock.Key ];
         RedisValue[] values =  [ _redisDistributedLock.Value ];
 
-        var db = _connectionMultiplexer.GetDatabase();
+        var db = connectionMultiplexer.GetDatabase();
         return db.ScriptEvaluateAsync(UnlockScript, key, values);
     }
 }
