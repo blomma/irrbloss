@@ -4,32 +4,19 @@ using System;
 using System.Threading.Tasks;
 using StackExchange.Redis;
 
-public class RedisDistributedLockManager
+public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultiplexer)
 {
-    public class RedisDistributedLock
+    public class RedisDistributedLock(RedisKey key, RedisValue value, TimeSpan validity)
     {
-        public RedisKey Key { get; private set; }
+        public RedisKey Key { get; private set; } = key;
 
-        public RedisValue Value { get; private set; }
+        public RedisValue Value { get; private set; } = value;
 
-        public TimeSpan Validity { get; private set; }
-
-        public RedisDistributedLock(RedisKey key, RedisValue value, TimeSpan validity)
-        {
-            Key = key;
-            Value = value;
-            Validity = validity;
-        }
+        public TimeSpan Validity { get; private set; } = validity;
     }
 
     private RedisDistributedLock? _redisDistributedLock;
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
-
-    public RedisDistributedLockManager(IConnectionMultiplexer connectionMultiplexer)
-    {
-        _connectionMultiplexer = connectionMultiplexer;
-    }
-
+    private readonly IConnectionMultiplexer _connectionMultiplexer = connectionMultiplexer;
     private const string UnlockScript =
         @"
             if redis.call(""get"",KEYS[1]) == ARGV[1] then
@@ -66,8 +53,8 @@ public class RedisDistributedLockManager
             return Task.CompletedTask;
         }
 
-        RedisKey[] key = { _redisDistributedLock.Key };
-        RedisValue[] values = { _redisDistributedLock.Value };
+        RedisKey[] key =  [ _redisDistributedLock.Key ];
+        RedisValue[] values =  [ _redisDistributedLock.Value ];
 
         var db = _connectionMultiplexer.GetDatabase();
         return db.ScriptEvaluateAsync(UnlockScript, key, values);

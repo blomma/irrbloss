@@ -7,11 +7,11 @@ using System.Reflection;
 using Irrbloss.Extensions;
 using Microsoft.Extensions.DependencyModel;
 
-public class DependencyContextAssemblyCatalog
+public class DependencyContextAssemblyCatalog(Assembly entryAssembly)
 {
     private static readonly string IrrblossAssemblyName;
 
-    private readonly DependencyContext _dependencyContext;
+    private readonly DependencyContext _dependencyContext = DependencyContext.Load(entryAssembly)!;
 
     static DependencyContextAssemblyCatalog()
     {
@@ -21,11 +21,6 @@ public class DependencyContextAssemblyCatalog
 
     public DependencyContextAssemblyCatalog()
         : this(Assembly.GetEntryAssembly()!) { }
-
-    public DependencyContextAssemblyCatalog(Assembly entryAssembly)
-    {
-        _dependencyContext = DependencyContext.Load(entryAssembly)!;
-    }
 
     public virtual IReadOnlyCollection<Assembly> GetAssemblies()
     {
