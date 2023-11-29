@@ -9,15 +9,12 @@ using Microsoft.Extensions.DependencyModel;
 
 public class DependencyContextAssemblyCatalog(Assembly entryAssembly)
 {
-    private static readonly string IrrblossAssemblyName;
+    private static readonly string IrrblossAssemblyName = typeof(IrrblossExtensions)
+        .Assembly
+        .GetName()
+        .Name!;
 
     private readonly DependencyContext _dependencyContext = DependencyContext.Load(entryAssembly)!;
-
-    static DependencyContextAssemblyCatalog()
-    {
-        var name = typeof(IrrblossExtensions).Assembly.GetName().Name ?? throw new Exception();
-        IrrblossAssemblyName = name;
-    }
 
     public DependencyContextAssemblyCatalog()
         : this(Assembly.GetEntryAssembly()!) { }
@@ -60,6 +57,10 @@ public class DependencyContextAssemblyCatalog(Assembly entryAssembly)
 
     private static bool IsReferencingIrrbloss(Library library)
     {
-        return library.Dependencies.Any(dependency => dependency.Name.Equals(IrrblossAssemblyName));
+        return library
+            .Dependencies
+            .Any(
+                dependency => dependency.Name.Equals(IrrblossAssemblyName, StringComparison.Ordinal)
+            );
     }
 }

@@ -25,7 +25,9 @@ public static class IrrblossExtensions
         {
             if (Activator.CreateInstance(serviceModule) is not IServiceModule t)
             {
-                throw new Exception();
+                throw new InvalidOperationException(
+                    "Servicemodule does not conform to interface IServiceModule"
+                );
             }
 
             t.AddServices(services, configuration);
