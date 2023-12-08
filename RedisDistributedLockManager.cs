@@ -52,8 +52,8 @@ public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultip
             return Task.CompletedTask;
         }
 
-        RedisKey[] key =  [ _redisDistributedLock.Key ];
-        RedisValue[] values =  [ _redisDistributedLock.Value ];
+        RedisKey[] key = [_redisDistributedLock.Key];
+        RedisValue[] values = [_redisDistributedLock.Value];
 
         var db = connectionMultiplexer.GetDatabase();
         return db.ScriptEvaluateAsync(UnlockScript, key, values);
