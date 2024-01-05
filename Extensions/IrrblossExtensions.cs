@@ -1,5 +1,3 @@
-namespace Irrbloss.Extensions;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +6,8 @@ using Irrbloss.Interfaces;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+namespace Irrbloss.Extensions;
 
 public static class IrrblossExtensions
 {

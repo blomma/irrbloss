@@ -1,11 +1,11 @@
-namespace Irrbloss;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Irrbloss.Extensions;
 using Microsoft.Extensions.DependencyModel;
+
+namespace Irrbloss;
 
 public class DependencyContextAssemblyCatalog(Assembly entryAssembly)
 {

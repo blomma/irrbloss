@@ -1,9 +1,9 @@
-namespace Irrbloss.Exceptions;
-
 using System;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+namespace Irrbloss.Exceptions;
 
 [Serializable]
 public class ManagedResponseException : Exception

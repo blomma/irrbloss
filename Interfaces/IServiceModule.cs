@@ -1,7 +1,7 @@
-namespace Irrbloss.Interfaces;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+namespace Irrbloss.Interfaces;
 
 public interface IServiceModule
 {

@@ -1,8 +1,8 @@
-namespace Irrbloss;
-
 using System;
 using System.Threading.Tasks;
 using StackExchange.Redis;
+
+namespace Irrbloss;
 
 public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultiplexer)
 {
