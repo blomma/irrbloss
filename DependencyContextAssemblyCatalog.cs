@@ -56,8 +56,8 @@ public class DependencyContextAssemblyCatalog(Assembly entryAssembly)
 
     private static bool IsReferencingIrrbloss(Library library)
     {
-        return library.Dependencies.Any(
-            dependency => dependency.Name.Equals(IrrblossAssemblyName, StringComparison.Ordinal)
+        return library.Dependencies.Any(dependency =>
+            dependency.Name.Equals(IrrblossAssemblyName, StringComparison.Ordinal)
         );
     }
 }

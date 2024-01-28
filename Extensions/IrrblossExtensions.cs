@@ -63,16 +63,11 @@ public static class IrrblossExtensions
 
     private static IEnumerable<Type> GetModules<T>(IReadOnlyCollection<Assembly> assemblies)
     {
-        return assemblies.SelectMany(
-            x =>
-                x.GetTypes()
-                    .Where(
-                        t =>
-                            !t.IsAbstract
-                            && typeof(T).IsAssignableFrom(t)
-                            && t != typeof(T)
-                            && t.IsPublic
-                    )
+        return assemblies.SelectMany(x =>
+            x.GetTypes()
+                .Where(t =>
+                    !t.IsAbstract && typeof(T).IsAssignableFrom(t) && t != typeof(T) && t.IsPublic
+                )
         );
     }
 }
