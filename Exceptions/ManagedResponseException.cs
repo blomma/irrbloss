@@ -16,7 +16,7 @@ public class ManagedResponseException : Exception
         {
             Title = exception.Message,
             Status = StatusCodes.Status500InternalServerError,
-            Detail = exception.Message
+            Detail = exception.Message,
         };
 
         ProblemDetails = problemDetails;
@@ -28,7 +28,7 @@ public class ManagedResponseException : Exception
         {
             Title = message,
             Status = (int)statusCode,
-            Detail = message
+            Detail = message,
         };
 
         ProblemDetails = problemDetails;

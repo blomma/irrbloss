@@ -6,23 +6,22 @@ namespace Irrbloss;
 
 public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultiplexer)
 {
-    public class RedisDistributedLock(RedisKey key, RedisValue value, TimeSpan validity)
+    private sealed class RedisDistributedLock(RedisKey key, RedisValue value)
     {
-        public RedisKey Key { get; private set; } = key;
+        public RedisKey Key { get; } = key;
 
-        public RedisValue Value { get; private set; } = value;
-
-        public TimeSpan Validity { get; private set; } = validity;
+        public RedisValue Value { get; } = value;
     }
 
     private RedisDistributedLock? _redisDistributedLock;
     private const string UnlockScript =
-        @"
-            if redis.call(""get"",KEYS[1]) == ARGV[1] then
-                return redis.call(""del"",KEYS[1])
-            else
-                return 0
-            end";
+        """
+                    if redis.call("get",KEYS[1]) == ARGV[1] then
+                        return redis.call("del",KEYS[1])
+                    else
+                        return 0
+                    end
+        """;
 
     private static byte[] CreateUniqueLockId()
     {
@@ -40,7 +39,7 @@ public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultip
             return false;
         }
 
-        _redisDistributedLock = new RedisDistributedLock(key, value, ttl);
+        _redisDistributedLock = new(key, value);
 
         return true;
     }
