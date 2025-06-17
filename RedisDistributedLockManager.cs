@@ -14,8 +14,7 @@ public class RedisDistributedLockManager(IConnectionMultiplexer connectionMultip
     }
 
     private RedisDistributedLock? _redisDistributedLock;
-    private const string UnlockScript =
-        """
+    private const string UnlockScript = """
                     if redis.call("get",KEYS[1]) == ARGV[1] then
                         return redis.call("del",KEYS[1])
                     else
